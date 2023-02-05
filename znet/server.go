@@ -17,6 +17,8 @@ type Server struct {
 	IP string
 	// port
 	Port int
+	// Router
+	Router zinterface.IRouter
 }
 
 // Start ...
@@ -33,6 +35,9 @@ func (s *Server) Start() {
 		fmt.Println("listen ", s.IPVersion, " err ", err)
 	}
 
+	var cid uint32
+	cid = 0
+
 	fmt.Println("start server succ, ", s.Name, " listening")
 	for {
 		conn, err := listener.AcceptTCP()
@@ -41,29 +46,21 @@ func (s *Server) Start() {
 			continue
 		}
 
-		go func() {
-			for {
-				buf := make([]byte, 512)
-				cnt, err := conn.Read(buf)
-				if err != nil {
-					fmt.Println("recv buf err", err)
-					continue
-				}
+		dealConn := NewConnection(conn, cid, s.Router)
+		cid++
 
-				fmt.Printf("recv client buf %s, cnt %d\n", buf, cnt)
-				if _, err := conn.Write(buf[:cnt]); err != nil {
-					fmt.Println("write back buf err", err)
-					continue
-				}
-			}
-
-		}()
+		go dealConn.Start()
 	}
 }
 
 // Stop ...
 func (s *Server) Stop() {
 
+}
+
+func (s *Server) AddRouter(router zinterface.IRouter) {
+	s.Router = router
+	fmt.Println("Add router succ!")
 }
 
 // Serve ...
@@ -80,6 +77,7 @@ func NewServer(name string) zinterface.IServer {
 		IPVersion: "tcp4",
 		IP:        "0.0.0.0",
 		Port:      9998,
+		Router:    nil,
 	}
 	return s
 }
