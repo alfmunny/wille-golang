@@ -11,7 +11,7 @@ func main() {
 
 	time.Sleep(1 * time.Second)
 
-	conn, err := net.Dial("tcp", "127.0.0.1:9998")
+	conn, err := net.Dial("tcp", "127.0.0.1:7777")
 
 	if err != nil {
 		fmt.Println("client start err, exit!")

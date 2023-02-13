@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/alfmunny/willego/utils"
 	"github.com/alfmunny/willego/zinterface"
 )
 
@@ -23,7 +24,7 @@ type Server struct {
 
 // Start ...
 func (s *Server) Start() {
-	fmt.Printf("[Start] Server Listener at IP :%s, Port %d, is starting\n", s.IP, s.Port)
+	fmt.Printf("[Willego: %s] Server Listener at IP :%s, Port %d, is starting\n", s.Name, s.IP, s.Port)
 	addr, err := net.ResolveTCPAddr(s.IPVersion, fmt.Sprintf("%s:%d", s.IP, s.Port))
 	if err != nil {
 		fmt.Println("resolve tcp addr error : ", err)
@@ -73,10 +74,10 @@ func (s *Server) Serve() {
 // NewServer Create Server
 func NewServer(name string) zinterface.IServer {
 	s := &Server{
-		Name:      name,
+		Name:      utils.Config.Name,
 		IPVersion: "tcp4",
-		IP:        "0.0.0.0",
-		Port:      9998,
+		IP:        utils.Config.Host,
+		Port:      utils.Config.TcpPort,
 		Router:    nil,
 	}
 	return s
